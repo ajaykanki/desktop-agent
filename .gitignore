@@ -1,0 +1,25 @@
+__pycache__/
+output/
+*.py[cod]
+build/
+dist/
+logs/
+wheels/
+*.egg-info/
+.bruno/
+
+# Virtual environments
+.venv/
+data/
+
+# Files
+temp.json
+*.env
+*.env.development
+*.txt
+*.pdf
+*.xlsx
+*.xls
+*.docx
+*.db
+*.log

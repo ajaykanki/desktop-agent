@@ -1,0 +1,7 @@
+[project]
+name = "desktop-agent"
+version = "0.1.0"
+description = "Desktop agent to execute desktop-level RPA tasks"
+readme = "README.md"
+requires-python = ">=3.11.13"
+dependencies = []
