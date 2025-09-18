@@ -142,6 +142,9 @@ cython_debug/
 *.json
 *.env
 *.env.development
+*.env.dev
+*.env.prod
+*.env.production
 *.txt
 *.pdf
 *.xlsx
