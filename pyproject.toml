@@ -7,7 +7,9 @@ requires-python = ">=3.11.13"
 [tool.uv.workspace]
 members = [
     "packages/sapgui",
+    "packages/api",
 ]
 
 [tool.uv.sources]
 sapgui = { workspace = true }
+api = { workspace = true }
