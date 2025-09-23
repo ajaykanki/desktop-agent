@@ -9,6 +9,7 @@ from scalar_fastapi import get_scalar_api_reference
 from api.logger import log
 from api.config import config
 from api.exceptions import HTTPException
+from api.utils import get_local_ip
 
 
 @asynccontextmanager
@@ -17,10 +18,10 @@ async def lifespan(app: FastAPI):
     try:
         # Initialize resources here
         # db.initialize()
-        # log.success(
-        #     f"Server running at http://{get_local_ip() if config.api.host == '0.0.0.0' else config.api.host}:"
-        #     f"{config.api.port}"
-        # )
+        log.success(
+            f"Server running at http://{get_local_ip() if config.api.host == '0.0.0.0' else config.api.host}:"
+            f"{config.api.port}"
+        )
         pass
     except Exception as e:
         log.error(f"Error during server startup: {e}")
