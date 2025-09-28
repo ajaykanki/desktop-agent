@@ -7,10 +7,14 @@ dependencies = [
     "loguru>=0.7.3",
     "pydantic-settings>=2.10.1",
     "scalar-fastapi>=1.4.1",
+    "shared"
 ]
 
 [project.scripts]
 api = "api:main"
+
+[tool.uv.sources]
+shared = { workspace = true }
 
 [build-system]
 requires = ["uv_build>=0.8.16,<0.9.0"]

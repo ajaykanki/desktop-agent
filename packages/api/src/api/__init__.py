@@ -1,5 +1,5 @@
 import uvicorn
-from api.config import config
+from shared import config
 from api.app import create_app
 
 app = create_app()

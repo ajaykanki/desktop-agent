@@ -6,8 +6,8 @@ from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from scalar_fastapi import get_scalar_api_reference
 
+from shared import config
 from api.logger import log
-from api.config import config
 from api.exceptions import HTTPException
 from api.utils import get_local_ip
 

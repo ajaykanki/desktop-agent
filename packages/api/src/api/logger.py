@@ -1,8 +1,7 @@
 import sys
 from pathlib import Path
 from loguru import logger
-from .config import config
-
+from shared import config
 
 def ensure_path_exists(path: str):
     path = Path(path)
