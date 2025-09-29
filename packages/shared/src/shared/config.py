@@ -100,7 +100,7 @@ class LoggingConfig(BaseSettings):
     error_file: str | None = None
 
 
-class Config(BaseSettings):
+class ConfigBase(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=env_file,
         env_file_encoding="utf-8",
@@ -113,7 +113,7 @@ class Config(BaseSettings):
     log: LoggingConfig = LoggingConfig()
     db: DBConfig = DBConfig()
     keyring_service: str | None = "desktop_agent"
-
+    error: bool = False
     @property
     def is_dev(self) -> bool:
         return self.env.lower() == "dev"
@@ -123,21 +123,21 @@ class Config(BaseSettings):
         return self.env.lower() == "production"
 
     def validate_config(self):
-        error = False
+        self.error = False
         if not self.api.key:
             logger.error("API key is not set in environment variables or keyring.")
-            error = True
+            self.error = True
 
         if not self.db.password:
             logger.error(
                 "Database password is not set in environment variables or keyring."
             )
-            error = True
+            self.error = True
 
-        if error:
+        if self.error:
             logger.error("Configuration validation failed. Please check the logs.")
             sys.exit(1)
 
 
-config = Config()
+config = ConfigBase()
 config.validate_config()

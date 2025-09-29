@@ -1,3 +1,3 @@
-from .config import config
+from .config import config, ConfigBase, KEYRING_SERVICE
 
-__all__ = ["config"]
+__all__ = ["config", "ConfigBase", "KEYRING_SERVICE"]
