@@ -100,7 +100,7 @@ class LoggingConfig(BaseSettings):
     error_file: str | None = None
 
 
-class ConfigBase(BaseSettings):
+class BaseConfig(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=env_file,
         env_file_encoding="utf-8",
@@ -139,5 +139,5 @@ class ConfigBase(BaseSettings):
             sys.exit(1)
 
 
-config = ConfigBase()
+config = BaseConfig()
 config.validate_config()

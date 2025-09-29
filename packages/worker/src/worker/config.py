@@ -1,6 +1,6 @@
 import os
 import keyring
-from shared import KEYRING_SERVICE, ConfigBase
+from shared import KEYRING_SERVICE, BaseConfig
 from loguru import logger
 from pathlib import Path
 from pydantic_settings import SettingsConfigDict, BaseSettings
@@ -40,7 +40,7 @@ class SAPConfig(BaseSettings):
             self.password = keyring.get_password(KEYRING_SERVICE, "sap_password")
 
 
-class WorkerConfig(ConfigBase):
+class WorkerConfig(BaseConfig):
     sap: SAPConfig = SAPConfig()
 
     def validate_config(self):
