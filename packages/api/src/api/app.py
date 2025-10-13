@@ -7,6 +7,7 @@ from scalar_fastapi import get_scalar_api_reference
 
 from api.config import config
 from api.logger import log
+from api.routes import TaskRouter
 from api.utils import get_local_ip
 
 
@@ -41,6 +42,7 @@ def create_app() -> FastAPI:
     )
 
     # Register routers here
+    app.include_router(TaskRouter, prefix=config.api.prefix)
 
     # Docs
     @app.get("/docs", include_in_schema=False)
