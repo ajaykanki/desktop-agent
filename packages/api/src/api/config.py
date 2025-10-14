@@ -4,8 +4,7 @@ import keyring
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from loguru import logger
 
-# Define the keyring service name consistently
-KEYRING_SERVICE_NAME = "desktop-agent"
+KEYRING_SERVICE_NAME = os.getenv("KEYRING_SERVICE_NAME", "desktop-agent")
 PRODUDCTION = ["prod", "production"]
 
 
