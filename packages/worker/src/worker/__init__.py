@@ -1,4 +1,4 @@
-from worker.proc import app
+from worker.core import app
 
 
 def main():

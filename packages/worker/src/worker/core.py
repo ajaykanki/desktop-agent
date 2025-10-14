@@ -8,5 +8,5 @@ asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
 app = App(
     connector=PsycopgConnector(conninfo=config.db.url),
-    import_paths=["worker.tasks.add"],
+    import_paths=["worker.tasks"],
 )
