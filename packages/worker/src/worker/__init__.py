@@ -1,8 +1,9 @@
 from worker.core import app
+from worker.config import config
 
 
 def main():
-    app.run_worker(concurrency=1)
+    app.run_worker(concurrency=config.worker.concurrency, name=config.worker.name)
 
 
 __all__ = ["app"]

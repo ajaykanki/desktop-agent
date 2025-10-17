@@ -106,7 +106,8 @@ class WorkerConfig(BaseModel):
         extra="ignore",
     )
     concurrency: int = 1
-    queues: list[str] | None = None
+    name: str | None = None
+    queues: list[str] | str = "sap"
     import_paths: list[str] = ["worker.tasks"]
 
 
