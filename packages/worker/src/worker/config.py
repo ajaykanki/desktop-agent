@@ -63,6 +63,7 @@ class SAPConfig(BaseSettings):
     password: str | None = None
     connection_name: str | None = "SAP 340 Quality"
     window_title: str = "SAP Logon 770"
+    executable_path: str = r"C:\Program Files (x86)\SAP\FrontEnd\SAPgui\saplogon.exe"
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
