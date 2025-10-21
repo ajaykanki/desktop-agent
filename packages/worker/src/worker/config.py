@@ -43,7 +43,7 @@ class DBConfig(BaseSettings):
         super().__init__(**kwargs)
         if not self.password:
             logger.warning(
-                "Database password is not set in environment variables. Attempting to retrieve from system keyring."
+                "DB_PASSWORD is not set in environment variables. Attempting to retrieve from system keyring."
             )
             self.password = get_keyring_password(KEYRING_SERVICE_NAME, "db_password")
 
@@ -64,6 +64,20 @@ class SAPConfig(BaseSettings):
     connection_name: str | None = "SAP 340 Quality"
     window_title: str = "SAP Logon 770"
 
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        if not self.username:
+            logger.warning(
+                "SAP_USERNAME is not set in environment variables. Attempting to retrieve from system keyring."
+            )
+            self.username = get_keyring_password(KEYRING_SERVICE_NAME, "sap_username")
+
+        if not self.password:
+            logger.warning(
+                "SAP_PASSWORD is not set in environment variables. Attempting to retrieve from system keyring."
+            )
+            self.password = get_keyring_password(KEYRING_SERVICE_NAME, "sap_password")
+
 
 class APIConfig(BaseSettings):
     model_config = SettingsConfigDict(
@@ -75,6 +89,14 @@ class APIConfig(BaseSettings):
     key: str | None = None
     key_header: str = "X-API-Key"
     base_url: str | None = "http://localhost:8000/api/v1"
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        if not self.key:
+            logger.warning(
+                "API_KEY is not set in environment variables. Attempting to retrieve from system keyring."
+            )
+            self.key = get_keyring_password(KEYRING_SERVICE_NAME, "api_key")
 
 
 class LoggingConfig(BaseSettings):
@@ -136,9 +158,7 @@ class Config(BaseSettings):
     def validate_config(self) -> bool:
         errors = []
         if not self.db.password:
-            errors.append(
-                "Database password is not set in environment variables or keyring."
-            )
+            errors.append("DB_PASSWORD is not set in environment variables or keyring.")
 
         if not self.api.key:
             errors.append("API_KEY is not set in environment variables or keyring.")

@@ -29,6 +29,25 @@ class APIConfig(BaseSettings):
     description: str = "A distributed task execution system with FastAPI server for task queue and workers for task execution"
 
 
+class DBConfig(BaseSettings):
+    model_config = SettingsConfigDict(
+        env_file=get_environment_file(),
+        env_prefix="DB_",
+        case_sensitive=False,
+        extra="ignore",
+    )
+
+    host: str = "localhost"
+    port: int = 5432
+    user: str = "postgres"
+    password: str | None = None
+    name: str | None = "postgres"
+
+    @property
+    def url(self) -> str:
+        return f"postgres://{self.user}:{self.password}@{self.host}:{self.port}/{self.name}"
+
+
 class LoggingConfig(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=get_environment_file(),
