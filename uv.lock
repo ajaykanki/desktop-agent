@@ -39,6 +39,8 @@ dependencies = [
     { name = "fastapi", extra = ["standard"] },
     { name = "keyring" },
     { name = "loguru" },
+    { name = "procrastinate" },
+    { name = "psycopg", extra = ["binary"] },
     { name = "pydantic-settings" },
     { name = "scalar-fastapi" },
 ]
@@ -48,6 +50,8 @@ requires-dist = [
     { name = "fastapi", extras = ["standard"], specifier = ">=0.118.3" },
     { name = "keyring", specifier = ">=25.6.0" },
     { name = "loguru", specifier = ">=0.7.3" },
+    { name = "procrastinate", specifier = ">=3.5.3" },
+    { name = "psycopg", extras = ["binary"], specifier = ">=3.2.11" },
     { name = "pydantic-settings", specifier = ">=2.11.0" },
     { name = "scalar-fastapi", specifier = ">=1.4.3" },
 ]
