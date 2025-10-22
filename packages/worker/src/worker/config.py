@@ -2,7 +2,6 @@ import os
 import keyring
 import sys
 from worker.logger import logger
-from pydantic import BaseModel
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 KEYRING_SERVICE_NAME = os.getenv("KEYRING_SERVICE_NAME", "desktop-agent")
@@ -115,7 +114,7 @@ class APIConfig(BaseSettings):
             self.key = get_keyring_password(KEYRING_SERVICE_NAME, "api_key")
 
 
-class WorkerConfig(BaseModel):
+class WorkerConfig(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=get_env_file(),
         env_prefix="WORKER_",
@@ -204,4 +203,3 @@ def _load_config() -> Config:
 
 
 config = _load_config()
-__all__ = ["config"]
