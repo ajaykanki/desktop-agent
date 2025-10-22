@@ -6,28 +6,28 @@ from fastapi.responses import JSONResponse
 from scalar_fastapi import get_scalar_api_reference
 
 from api.config import config
-from api.logger import log
+from api.logger import logger
 from api.routes import TaskRouter
 from api.utils import get_local_ip
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    log.info("Starting FastAPI server...")
+    logger.info("Starting FastAPI server...")
     try:
         # Initialize resources here
         # db.initialize()
-        log.success(
+        logger.success(
             f"Server running at http://{get_local_ip() if config.api.host == '0.0.0.0' else config.api.host}:"
             f"{config.api.port}"
         )
         pass
     except Exception as e:
-        log.error(f"Error during server startup: {e}")
+        logger.error(f"Error during server startup: {e}")
         raise e
 
     yield
-    log.info("Stopping FastAPI server...")
+    logger.info("Stopping FastAPI server...")
     # Cleanup resources here
     # db.close()
 
@@ -55,7 +55,7 @@ def create_app() -> FastAPI:
 
     @app.exception_handler(Exception)
     async def general_exception_handler(request, exc: Exception):
-        log.error(f"Unhandled exception: {str(exc)}")
+        logger.error(f"Unhandled exception: {str(exc)}")
         return JSONResponse(
             status_code=500,
             content={
