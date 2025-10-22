@@ -1,7 +1,6 @@
 import os
 import keyring
 import sys
-from typing import Optional, List, Union
 from worker.logger import logger
 from pydantic import BaseModel
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -50,8 +49,8 @@ class DBConfig(BaseSettings):
     host: str = "localhost"
     port: int = 5432
     user: str = "postgres"
-    password: Optional[str] = None
-    name: Optional[str] = "postgres"
+    password: str | None = None
+    name: str | None = "postgres"
 
     def model_post_init(self, __context) -> None:
         """Post initialization hook to handle keyring password retrieval."""

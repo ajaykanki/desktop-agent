@@ -58,9 +58,9 @@ class LoggingConfig(BaseSettings):
 
     level: str = "INFO"
     format: str = (
-        "<g>{time: DD-MM-YYYY hh:mm:ss A}</g> | <m>{extra[service]}</m> | <level> [{level}] {message}</level>"
+        "<g>{time: DD-MM-YYYY hh:mm:ss A}</g> | <level>[{level}] {message}</level>"
         if os.getenv("ENV", "dev") in PRODUCTION
-        else "<g>{time: DD-MM-YYYY hh:mm:ss A}</g> | <c>{extra[service]}</c> | <level> [{level}] | <m>{name}:{function}:{line}</m> {message}</level>"
+        else "<g>{time: DD-MM-YYYY hh:mm:ss A}</g> | <level>[{level}]</level> | <cyan>{name}</cyan>:<cyan>{function}</cyan>:<cyan>{line}</cyan> - <level>{message}</level>"
     )
     level: str = "INFO"
     rotation: str = "100 MB"
@@ -80,6 +80,7 @@ class Config(BaseSettings):
 
     env: str = os.getenv("ENV", "dev")
     api: APIConfig = APIConfig()
+    db: DBConfig = DBConfig()
     log: LoggingConfig = LoggingConfig()
 
     @property
