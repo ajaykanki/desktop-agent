@@ -11,6 +11,10 @@ wheels/
 
 # Files
 .env
+.env.dev
+.env.staging
+.env.development
+.env.test
 *.log
 *.db
 *.json
