@@ -1,41 +1,8 @@
-import os
-import keyring
 from logger import logger
 from pydantic_settings import BaseSettings, SettingsConfigDict
-
-ENV = os.getenv("ENV", "dev").lower()
-PRODUCTION = ["prod", "production"]
-KEYRING_SERVICE_NAME = "desktop-agent"
-
-
-def get_env_file():
-    """Get the appropriate environment file based on the current environment."""
-    env_file = ".env" if ENV in PRODUCTION else f".env.{ENV}"
-    return env_file
-
-
-def get_keyring_password(
-    key_name: str, service_name: str = KEYRING_SERVICE_NAME
-) -> str | None:
-    """
-    Safely retrieve password from system keyring.
-
-    Args:
-        service_name: The name of the service to retrieve from keyring
-        key_name: The key name to retrieve from keyring
-
-    Returns:
-        The password string if found, None otherwise
-    """
-    try:
-        password = keyring.get_password(service_name, key_name)
-        if password is None:
-            logger.debug(f"No keyring entry found for {key_name}")
-
-        return password
-    except Exception as e:
-        logger.warning(f"Failed to retrieve {key_name} from keyring: {e}")
-        return None
+from settings import get_env_file, ENV, KEYRING_SERVICE_NAME, PRODUCTION
+from settings.api import APISettings
+from settings.db import DBSettings
 
 
 class Settings(BaseSettings):
@@ -46,6 +13,8 @@ class Settings(BaseSettings):
     )
 
     env: str = ENV
+    api: APISettings = APISettings()
+    db: DBSettings = DBSettings()
     keyring_service_name: str = KEYRING_SERVICE_NAME
 
     @property
@@ -55,3 +24,37 @@ class Settings(BaseSettings):
     @property
     def is_prod(self) -> bool:
         return self.env in PRODUCTION
+
+    def validate_config(self) -> bool:
+        """
+        Validate the configuration settings.
+
+        Returns:
+            True if all required configurations are set, False otherwise
+        """
+
+        errors = []
+        if not self.db.password:
+            errors.append("DB_PASSWORD is not set in environment variables or keyring.")
+
+        if errors:
+            for err in errors:
+                logger.error(err)
+
+            logger.info("Configuration validation failed.")
+            return False
+
+        return True
+
+
+def _load_config() -> Settings:
+    config = Settings()
+
+    if not config.validate_config():
+        logger.error("Invalid configuration. Exiting.")
+        exit(1)
+
+    return config
+
+
+config = _load_config()
