@@ -20,3 +20,4 @@ dependencies = [
 
 [project.scripts]
 api = "desktop_agent.main:main"
+worker = "desktop_agent.worker.worker:run_worker"
