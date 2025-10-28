@@ -1,0 +1,23 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+# Files
+.env
+*.log
+*.db
+*.json
+*.txt
+*.pdf
+*.docx
+*.xlsx
+*.xlsb
+*.xlsm
+*.xls
