@@ -18,6 +18,3 @@ class APISettings(BaseSettings):
     title: str = "Desktop Worker Agent API"
     version: str = "0.1.0"
     description: str = "A desktop worker agent to execute tasks that require a GUI"
-
-
-
