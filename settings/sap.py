@@ -33,3 +33,24 @@ class SAPSettings(BaseSettings):
             self.password = get_keyring_password("SAP_PASSWORD")
 
         return super().model_post_init(context)
+
+    def validate_config(self) -> bool:
+        errors = []
+        if not self.username:
+            errors.append(
+                "SAP_USERNAME is not set in environment variables or keyring."
+            )
+
+        if not self.password:
+            errors.append(
+                "SAP_PASSWORD is not set in environment variables or keyring."
+            )
+
+        if errors:
+            for err in errors:
+                logger.error(err)
+
+            logger.info("Configuration validation failed.")
+            return False
+
+        return True
