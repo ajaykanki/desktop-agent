@@ -4,6 +4,7 @@ from datetime import datetime, timezone
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 from scalar_fastapi import get_scalar_api_reference
+from desktop_agent.api.routes import JobRouter
 
 from desktop_agent.logger import logger
 from desktop_agent.settings.config import config
@@ -38,6 +39,7 @@ def create_app() -> FastAPI:
     )
 
     # Register routers here
+    app.include_router(JobRouter, prefix=config.api.prefix)
 
     # Docs
     @app.get("/docs", include_in_schema=False)
@@ -61,7 +63,7 @@ def create_app() -> FastAPI:
         )
 
     # Root
-    @app.get("/")
+    @app.get("/", tags=["Root"])
     async def root():
         return {
             "name": config.api.title,
