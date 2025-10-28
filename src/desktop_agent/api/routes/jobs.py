@@ -6,9 +6,10 @@ from desktop_agent.worker.core import app
 
 class JobRequest(BaseModel):
     name: str
-    kwargs: dict[str, Any]
-    queue: str | None = "default"
-    priority: int = 0
+    kwargs: dict[str, Any] | None = None
+    queue: str | None = None
+    priority: int | None = None
+    job_options: dict[str, Any] | None = None
 
 
 class JobResponse(BaseModel):
@@ -27,8 +28,14 @@ router = APIRouter(prefix="/jobs", tags=["Job Queue"])
     description="Defer a job to be executed",
 )
 async def defer_job(req: JobRequest):
+    print(req.model_dump())
     with app.open():
-        job = app.configure_task(req.name).defer(**req.kwargs)
+        job = app.configure_task(
+            name=req.name,
+            queue=req.queue,
+            priority=req.priority,
+            **req.job_options if req.job_options else {},
+        ).defer(**req.kwargs)
 
     return {
         "success": True,

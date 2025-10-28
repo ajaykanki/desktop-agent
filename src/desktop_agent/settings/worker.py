@@ -13,7 +13,7 @@ class WorkerSettings(BaseSettings):
 
     concurrency: int = 1
     name: str | None = None
-    queues: list[str] | str = "sap"
+    queues: list[str] | None = None
     import_paths: list[str] = ["tasks"]
     api_key: str | None = None
 

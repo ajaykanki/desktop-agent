@@ -10,7 +10,11 @@ def run_worker():
         except Exception:
             logger.error("Schema already applied or failed to apply schema")
 
-    app.run_worker(concurrency=workerConfig.concurrency, name=workerConfig.name)
+    app.run_worker(
+        concurrency=workerConfig.concurrency,
+        name=workerConfig.name,
+        queues=workerConfig.queues,
+    )
 
 
 if __name__ == "__main__":
