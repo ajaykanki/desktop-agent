@@ -1,5 +1,6 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
-from settings.config import get_env_file
+from settings.config import get_env_file, get_keyring_password
+from logger import logger
 
 
 class SAPSettings(BaseSettings):
@@ -18,4 +19,17 @@ class SAPSettings(BaseSettings):
         r"C:\Program Files (x86)\SAP\FrontEnd\SAPgui\saplogon.exe"
     )
 
-    
+    def model_post_init(self, context):
+        if self.username is None:
+            logger.warning(
+                "SAP_USERNAME is not set in environment variables. Attempting to retrieve from keyring."
+            )
+            self.username = get_keyring_password("SAP_USERNAME")
+
+        if self.password is None:
+            logger.warning(
+                "SAP_PASSWORD is not set in environment variables. Attempting to retrieve from keyring."
+            )
+            self.password = get_keyring_password("SAP_PASSWORD")
+
+        return super().model_post_init(context)
