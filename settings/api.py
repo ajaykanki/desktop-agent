@@ -19,8 +19,5 @@ class APISettings(BaseSettings):
     version: str = "0.1.0"
     description: str = "A desktop worker agent to execute tasks that require a GUI"
 
-    @property
-    def url(self) -> str:
-        return f"postgres://{self.user}:{self.password}@{self.host}:{self.port}/{self.name}"
 
-    
+
