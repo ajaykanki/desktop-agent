@@ -1,6 +1,6 @@
 import os
 import keyring
-from logger import logger
+from desktop_agent.logger import logger
 
 ENV = os.getenv("ENV", "dev").lower()
 PRODUCTION = ["prod", "production"]

@@ -5,10 +5,9 @@ from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 from scalar_fastapi import get_scalar_api_reference
 
-from logger import logger
-from settings.config import config
-from api.utils import get_local_ip
-
+from desktop_agent.logger import logger
+from desktop_agent.settings.config import config
+from .utils import get_local_ip
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):

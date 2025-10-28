@@ -1,6 +1,6 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
-from settings import get_env_file, get_keyring_password
-from logger import logger
+from desktop_agent.settings import get_env_file, get_keyring_password
+from desktop_agent.logger import logger
 
 
 class DBSettings(BaseSettings):
