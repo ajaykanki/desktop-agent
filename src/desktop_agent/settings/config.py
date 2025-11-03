@@ -1,8 +1,8 @@
 from desktop_agent.logger import logger
 from pydantic_settings import BaseSettings, SettingsConfigDict
-from desktop_agent.settings import get_env_file, ENV, KEYRING_SERVICE_NAME, PRODUCTION
-from desktop_agent.settings.api import APISettings
-from desktop_agent.settings.db import DBSettings
+from .constants import get_env_file, ENV, KEYRING_SERVICE_NAME, PRODUCTION
+from .api import APISettings
+from .db import DBSettings
 
 
 class Settings(BaseSettings):

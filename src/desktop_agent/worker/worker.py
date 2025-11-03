@@ -1,6 +1,7 @@
 from desktop_agent.logger import logger
 from desktop_agent.worker.core import app
 from desktop_agent.settings import worker_config
+from desktop_agent.settings import sap_config
 
 
 def run_worker():
@@ -11,7 +12,11 @@ def run_worker():
         except Exception:
             logger.error("Schema already applied or failed to apply schema")
 
-    print(app.tasks)
+    is_ok = sap_config.validate_config()
+
+    if not is_ok:
+        logger.error("SAP configuration is invalid. Exiting.")
+        exit(1)
 
     app.run_worker(
         concurrency=worker_config.concurrency,

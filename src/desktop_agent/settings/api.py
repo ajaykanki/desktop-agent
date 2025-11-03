@@ -1,5 +1,5 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
-from desktop_agent.settings import get_env_file
+from .constants import get_env_file
 
 
 class APISettings(BaseSettings):
