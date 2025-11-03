@@ -13,7 +13,7 @@ class SAPSettings(BaseSettings):
 
     username: str | None = None
     password: str | None = None
-    connection_name: str | None = "SAP 340 Quality"
+    connection_name: str | None = "340 Quality"
     window_title: str | None = "SAP Logon 770"
     executable_path: str | None = (
         r"C:\Program Files (x86)\SAP\FrontEnd\SAPgui\saplogon.exe"
@@ -54,3 +54,6 @@ class SAPSettings(BaseSettings):
             return False
 
         return True
+
+
+config = SAPSettings()

@@ -38,3 +38,5 @@ class WorkerSettings(BaseSettings):
                 exit(1)
 
         return super().model_post_init(context)
+
+config = WorkerSettings()

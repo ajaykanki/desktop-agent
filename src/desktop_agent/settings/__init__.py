@@ -1,6 +1,10 @@
 import os
 import keyring
 from desktop_agent.logger import logger
+from .config import config
+from .worker import config as worker_config
+from .sap import config as sap_config
+
 
 ENV = os.getenv("ENV", "dev").lower()
 PRODUCTION = ["prod", "production"]
@@ -35,3 +39,10 @@ def get_keyring_password(
     except Exception as e:
         logger.warning(f"Failed to retrieve {key_name} from keyring: {e}")
         return None
+
+
+__all__ = [
+    "config",
+    "worker_config",
+    "sap_config",
+]
