@@ -1,18 +1,16 @@
 import asyncio
 import functools
 import logging
-from desktop_agent.settings.config import config
-from desktop_agent.settings.worker import WorkerSettings
+from desktop_agent.settings import config, worker_config
 from procrastinate import App, PsycopgConnector
 
 logging.basicConfig(level=logging.DEBUG if config.is_dev else logging.INFO)
 asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
-workerConfig = WorkerSettings()
 
 app = App(
     connector=PsycopgConnector(conninfo=config.db.url),
-    import_paths=workerConfig.import_paths,
+    import_paths=worker_config.import_paths,
 )
 
 

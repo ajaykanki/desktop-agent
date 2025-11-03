@@ -1,5 +1,6 @@
 from desktop_agent.logger import logger
-from desktop_agent.worker.core import app, workerConfig
+from desktop_agent.worker.core import app
+from desktop_agent.settings import worker_config
 
 
 def run_worker():
@@ -10,10 +11,12 @@ def run_worker():
         except Exception:
             logger.error("Schema already applied or failed to apply schema")
 
+    print(app.tasks)
+
     app.run_worker(
-        concurrency=workerConfig.concurrency,
-        name=workerConfig.name,
-        queues=workerConfig.queues,
+        concurrency=worker_config.concurrency,
+        name=worker_config.name,
+        queues=worker_config.queues,
     )
 
 
