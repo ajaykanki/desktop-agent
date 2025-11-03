@@ -54,6 +54,3 @@ class SAPSettings(BaseSettings):
             return False
 
         return True
-
-
-config = SAPSettings()

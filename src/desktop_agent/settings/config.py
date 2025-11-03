@@ -3,9 +3,11 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 from .constants import get_env_file, ENV, KEYRING_SERVICE_NAME, PRODUCTION
 from .api import APISettings
 from .db import DBSettings
+from .sap import SAPSettings
+from .worker import WorkerSettings
 
 
-class Settings(BaseSettings):
+class GlobalConfig(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=get_env_file(),
         case_sensitive=False,
@@ -15,6 +17,8 @@ class Settings(BaseSettings):
     env: str = ENV
     api: APISettings = APISettings()
     db: DBSettings = DBSettings()
+    sap: SAPSettings = SAPSettings()
+    worker: WorkerSettings = WorkerSettings()
     keyring_service_name: str = KEYRING_SERVICE_NAME
 
     @property
@@ -34,6 +38,7 @@ class Settings(BaseSettings):
         """
 
         errors = []
+        # DB_PASSWORD is mandatory to at least start the api server.
         if not self.db.password:
             errors.append("DB_PASSWORD is not set in environment variables or keyring.")
 
@@ -47,14 +52,11 @@ class Settings(BaseSettings):
         return True
 
 
-def _load_config() -> Settings:
-    config = Settings()
+def _load_config() -> GlobalConfig:
+    config = GlobalConfig()
 
     if not config.validate_config():
         logger.error("Invalid configuration. Exiting.")
         exit(1)
 
     return config
-
-
-config = _load_config()

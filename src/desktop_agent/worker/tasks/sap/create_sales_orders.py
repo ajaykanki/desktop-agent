@@ -5,7 +5,8 @@ from typing import Any
 from pathlib import Path
 from tenacity import retry, stop_after_attempt, wait_fixed, Retrying, RetryError
 from desktop_agent.logger import logger
-from desktop_agent.worker.core import sapConfig, task
+from desktop_agent.worker.core import task
+from desktop_agent.settings import config
 from sap_gui_engine.objects.gui_session import GuiSession
 from .mappings import (
     ScreenOrder,
@@ -240,11 +241,11 @@ def perform_entry_point_actions(session: GuiSession, screen: Screen):
 @retry(reraise=True, stop=stop_after_attempt(3), wait=wait_fixed(3))
 def init_sap_and_login():
     sap = SAPGuiEngine(
-        connection_name=sapConfig.connection_name,
-        window_title=sapConfig.window_title,
-        executable_path=sapConfig.executable_path,
+        connection_name=config.sap.connection_name,
+        window_title=config.sap.window_title,
+        executable_path=config.sap.executable_path,
     )
-    sap.login(sapConfig.username, sapConfig.password)
+    sap.login(config.sap.username, config.sap.password)
     return sap
 
 

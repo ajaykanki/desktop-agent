@@ -1,10 +1,6 @@
-from .config import config
-from .worker import config as worker_config
-from .sap import config as sap_config
+from .config import _load_config
 
 
-__all__ = [
-    "config",
-    "worker_config",
-    "sap_config",
-]
+config = _load_config()
+
+__all__ = ["config"]
