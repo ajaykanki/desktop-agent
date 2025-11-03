@@ -1,4 +1,4 @@
-from desktop_agent.worker.tasks.sap.sap_mappings import (
+from .sap_mappings import (
     Screen,
     GuiElement,
     Action,
