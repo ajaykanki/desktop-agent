@@ -1,7 +1,3 @@
-from desktop_agent.worker.core import task
+from .sap import create_sales_orders
 
-
-@task(name="add")
-def add(a: int, b: int) -> int:
-    print("Adding numbers...", a, b)
-    return a + b
+__all__ = ["add", "create_sales_orders"]
