@@ -193,7 +193,6 @@ dependencies = [
     { name = "pywin32" },
     { name = "pywinauto" },
     { name = "rpa-toolkit" },
-    { name = "sap-gui-engine" },
     { name = "scalar-fastapi" },
     { name = "tenacity" },
 ]
@@ -211,7 +210,6 @@ requires-dist = [
     { name = "pywin32", specifier = ">=311" },
     { name = "pywinauto", specifier = ">=0.6.9" },
     { name = "rpa-toolkit", specifier = ">=0.1.1" },
-    { name = "sap-gui-engine", specifier = ">=0.1.1a5" },
     { name = "scalar-fastapi", specifier = ">=1.4.3" },
     { name = "tenacity", specifier = ">=9.1.2" },
 ]
@@ -989,19 +987,6 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/9a/80/949864af97fb8ed4f379d39a8d0ec0a919246caddca82b22bf3ffc13da62/rpa_toolkit-0.1.1.tar.gz", hash = "sha256:07dfc3b231834036dd6a087d913f9c0a85bea018806ef55ed117e3f93465404f", size = 5595, upload-time = "2025-10-23T20:07:49.719Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/d1/20/e14ddbb7cc577ecac0b153142588a69584ef9b80f3ebd3c7dcdacf8d2a88/rpa_toolkit-0.1.1-py3-none-any.whl", hash = "sha256:94017e24340baa40f8c0e0cfc52b90f6ac62e82e43471596142531902f6b8977", size = 7252, upload-time = "2025-10-23T20:07:48.397Z" },
-]
-
-[[package]]
-name = "sap-gui-engine"
-version = "0.1.1a5"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "pywin32" },
-    { name = "pywinauto" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/c0/4b/70878f30141821ea1f84371973cf15a88cac7ee340fb92c13a3e57a50277/sap_gui_engine-0.1.1a5.tar.gz", hash = "sha256:872f86e0db50e5915437849c77b9d215b537ee806b622bfa373b5d722d236812", size = 9164, upload-time = "2025-11-02T16:36:57.508Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/d2/a5/68cf4fdef65a2bb098c81e8c3bd2a9e9bb241d3ce015db37b4ade6a388cf/sap_gui_engine-0.1.1a5-py3-none-any.whl", hash = "sha256:ae3cccee744010399eb0608e6097052b3e90dac265c7164f608a5d6cbfbc00fa", size = 13737, upload-time = "2025-11-02T16:36:56.038Z" },
 ]
 
 [[package]]

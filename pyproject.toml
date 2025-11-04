@@ -16,7 +16,6 @@ dependencies = [
     "pywin32>=311",
     "pywinauto>=0.6.9",
     "rpa-toolkit>=0.1.1",
-    "sap-gui-engine>=0.1.1a5",
     "scalar-fastapi>=1.4.3",
     "tenacity>=9.1.2",
 ]
