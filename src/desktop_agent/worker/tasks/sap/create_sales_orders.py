@@ -38,6 +38,7 @@ def create_sales_orders(
 
     logger.info("Checking if PO working file exists...")
     check_if_po_file_exists(po_working)
+    po_working = Path(po_working)
 
     logger.info("Reading the po working file...")
     df = read_excel(po_working, drop_empty_cols=False, drop_empty_rows=False).collect()
@@ -50,21 +51,54 @@ def create_sales_orders(
     logger.info("Total Sales Orders to be created: {}", total_sales_orders)
 
     sap = init_sap_and_login()
+
+    # Create an empty output dataframe with the same schema as the input dataframe
+    output_df = pl.DataFrame(schema=df.schema)
+
     for so_count, line_items in sales_orders.items():
         logger.info(f"Creating sales order {so_count} of {total_sales_orders}")
+
+        so_number = None
+        error_message = None
+
         try:
             so_number = va01(
                 sap.session, line_items, va01_details, screen_order_objects
             )
         except Exception as e:
             error_message = str(e)
-            logger.error(e)
+            logger.error(
+                "Error creating sales order {so_count} of {total_sales_orders}: {error_message} : {e}",
+                so_count=so_count,
+                total_sales_orders=total_sales_orders,
+                error_message=error_message,
+                e=e,
+            )
+
             # TODO: Capture screenshot
-            # TODO: Create error object
-            # TODO: Update line items with this error message back in dataframe
+            # TODO: Create some kind of error object format to save error list
         finally:
-            # TODO: Save df to write changes
-            pass
+            # Update line items with error message or the sales order number
+            for item in line_items:
+                item["sales order"] = so_number if so_number else error_message
+
+            # Add a blank row to line_items
+            if so_count != total_sales_orders:
+                line_items.append({key: None for key in line_items[0].keys()})
+
+            # Create a new dataframe with the updated line items
+            df = pl.DataFrame(data=line_items)
+
+            # Append this updated dataframe to the output dataframe
+            output_df.extend(df)
+            output_path = po_working.with_suffix(".updated.xlsx")
+            output_df.write_excel(
+                output_path,
+                autofit=True,
+                dtype_formats={pl.Int64: "0"},
+                header_format={"bold": True, "bg_color": "yellow", "border": 1},
+                freeze_panes=(1, 2),
+            )
 
 
 def va01(
@@ -272,10 +306,12 @@ def collect_sales_orders_data(df: pl.DataFrame) -> dict[str, list[dict[str, Any]
 def insert_sales_order_col(df: pl.DataFrame) -> pl.DataFrame:
     if "po number" in df.columns:
         idx = df.columns.index("po number")
-        df.insert_column(idx + 1, pl.Series("sales order", [None] * len(df)))
+        df.insert_column(
+            idx + 1, pl.Series("sales order", [None] * len(df), dtype=pl.String)
+        )
     else:
         # insert after 1st column
-        df.insert_column(1, pl.Series("sales order", [None] * len(df)))
+        df.insert_column(1, pl.Series("sales order", [None] * len(df), dtype=pl.String))
 
     return df
 
