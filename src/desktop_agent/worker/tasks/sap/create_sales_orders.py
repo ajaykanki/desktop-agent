@@ -37,14 +37,15 @@ def create_sales_orders(
     ]
 
     logger.info("Checking if PO working file exists...")
-    check_if_po_file_exists(po_working)
-    po_working = Path(po_working)
+    po_working = validate_and_merge_base_path(
+        config.worker.network_drive_letter, po_working
+    )
 
     logger.info("Reading the po working file...")
     df = read_excel(po_working, drop_empty_cols=False, drop_empty_rows=False).collect()
     df = insert_sales_order_col(df)
 
-    logger.info("Collecting sales order data as per the gaps in the excel sheet...")
+    logger.info("Collecting sales order data from the excel sheet...")
     sales_orders = collect_sales_orders_data(df)
 
     total_sales_orders = len(sales_orders)
@@ -74,7 +75,6 @@ def create_sales_orders(
                 error_message=error_message,
                 e=e,
             )
-
             # TODO: Capture screenshot
             # TODO: Create some kind of error object format to save error list
         finally:
@@ -317,10 +317,12 @@ def insert_sales_order_col(df: pl.DataFrame) -> pl.DataFrame:
 
 
 @retry(reraise=True, stop=stop_after_attempt(3), wait=wait_fixed(5))
-def check_if_po_file_exists(file_path: str) -> bool:
-    if not Path(file_path).exists():
+def validate_and_merge_base_path(base_path: str, file_path: str) -> Path:
+    merged_path = Path(base_path) / file_path
+
+    if not Path(merged_path).exists():
         raise FileNotFoundError(
-            f"PO working file not found at {file_path} or Network drive may be down. Please check"
+            f"File not found at {file_path} or Network drive may be down. Please check"
         )
 
-    return True
+    return merged_path
