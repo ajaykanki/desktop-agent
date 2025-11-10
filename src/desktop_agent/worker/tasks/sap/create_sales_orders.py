@@ -1,9 +1,18 @@
 import polars as pl
+from procrastinate import JobContext
 from sap_gui_engine import SAPGuiEngine, VKey
+from sap_gui_engine.exceptions import TableConfigurationError
 from rpa_toolkit.excel import read_excel
 from typing import Any
 from pathlib import Path
-from tenacity import retry, stop_after_attempt, wait_fixed, Retrying, RetryError
+from tenacity import (
+    retry,
+    stop_after_attempt,
+    retry_if_not_exception_type,
+    wait_fixed,
+    Retrying,
+    RetryError,
+)
 from desktop_agent.logger import logger
 from desktop_agent.worker.core import task
 from desktop_agent.settings import config
@@ -19,17 +28,21 @@ from .mappings import (
 
 
 # For all the tasks going in the same queue, you must use the same lock for all task if you want them to execute sequentially.
-@task(name="create_sales_orders", lock="sap")
+# All tasks first parameter must be the JobContext
+@task(name="create_sales_orders", pass_context=True, lock="sap", queue="sap")
 def create_sales_orders(
-    po_working: str,
+    context: JobContext,
+    po_working_path: str,
     va01_details: dict[str, Any],
-    screen_order: list[dict[str, Any]] = None,
+    screen_order: list[dict[str, Any]],
 ):
     logger.info("Converting screen_order to list of ScreenOrder objects...")
     screen_order_objects = [
         ScreenOrder(
             name=screen.get("name"),
-            post_actions=[Action(**action) for action in screen.get("post_actions")],
+            post_actions=[Action(**action) for action in screen.get("post_actions")]
+            if isinstance(screen.get("post_actions"), list)
+            else Action(**screen.get("post_actions")),
         )
         if isinstance(screen, dict)
         else ScreenOrder(name=screen)
@@ -37,25 +50,30 @@ def create_sales_orders(
     ]
 
     logger.info("Checking if PO working file exists...")
-    po_working = validate_and_merge_base_path(
-        config.worker.network_drive_letter, po_working
+    po_working_path = validate_and_merge_base_path(
+        config.worker.network_drive_letter, po_working_path
     )
 
     logger.info("Reading the po working file...")
-    df = read_excel(po_working, drop_empty_cols=False, drop_empty_rows=False).collect()
+    df = read_excel(
+        po_working_path, drop_empty_cols=False, drop_empty_rows=False
+    ).collect()
     df = insert_sales_order_col(df)
 
     logger.info("Collecting sales order data from the excel sheet...")
     sales_orders = collect_sales_orders_data(df)
 
     total_sales_orders = len(sales_orders)
-    logger.info("Total Sales Orders to be created: {}", total_sales_orders)
+    logger.info("Total sales orders to be created: {}", total_sales_orders)
 
     sap = init_sap_and_login()
 
     # Create an empty output dataframe with the same schema as the input dataframe
     output_df = pl.DataFrame(schema=df.schema)
-
+    error_df = pl.DataFrame(
+        schema=df.schema
+    )  #  Send as attachment if some so creation fails
+    error_list = []  # PO Number and Screenshot Path
     for so_count, line_items in sales_orders.items():
         logger.info(f"Creating sales order {so_count} of {total_sales_orders}")
 
@@ -76,7 +94,16 @@ def create_sales_orders(
                 e=e,
             )
             # TODO: Capture screenshot
-            # TODO: Create some kind of error object format to save error list
+            # Capture screenshot of wnd[0] by default, unless the error_message contains "Error while filling table" in that case wnd[1]
+
+            error_list.append(
+                {
+                    "type": type(e).__name__,
+                    "message": error_message,
+                    "po number": line_items[0].get("po number", None),
+                    "screenshot_path": "",
+                }
+            )
         finally:
             # Update line items with error message or the sales order number
             for item in line_items:
@@ -86,19 +113,40 @@ def create_sales_orders(
             if so_count != total_sales_orders:
                 line_items.append({key: None for key in line_items[0].keys()})
 
-            # Create a new dataframe with the updated line items
+            # Create a new temporary dataframe with the updated line items
             df = pl.DataFrame(data=line_items)
 
-            # Append this updated dataframe to the output dataframe
-            output_df.extend(df)
-            output_path = po_working.with_suffix(".updated.xlsx")
-            output_df.write_excel(
+            # Append this updated dataframe to the main output or error df
+            df_to_write = error_df if error_message else output_df
+            suffix = ".errors.xlsx" if error_message else ".updated.xlsx"
+
+            df_to_write.extend(df)
+            output_path = po_working_path.with_suffix(suffix)
+            df_to_write.write_excel(
                 output_path,
                 autofit=True,
                 dtype_formats={pl.Int64: "0"},
                 header_format={"bold": True, "bg_color": "yellow", "border": 1},
-                freeze_panes=(1, 2),
+                freeze_panes=(1, 2),  # First header row, and first two columns
             )
+
+    so_created = total_sales_orders - len(error_list)
+    so_failed = len(error_list)
+    logger.info(
+        "Sales orders created: {created} and failed: {failed}",
+        created=so_created,
+        failed=so_failed,
+    )
+    return {
+        "total_sales_orders": total_sales_orders,
+        "sales_orders_created": so_created,
+        "sales_orders_failed": so_failed,
+        "error_list": error_list,
+        "output_path": output_path,
+        "error_path": output_path.with_suffix(".errors.xlsx")
+        if len(error_list) > 0
+        else None,
+    }
 
 
 def va01(
@@ -136,22 +184,45 @@ def va01(
     # Save document
     # Get document number
     # Return document number
-    # TODO: Set partner function, and partner in po_working file
+    return "1234SO"
 
 
-@retry(reraise=True, stop=stop_after_attempt(2), wait=wait_fixed(1))
+def attach_pis(session: GuiSession, pis: str, select_all_id: str):
+    session.findById(select_all_id).click()
+    session.findById("wnd[0]/mbar/menu[3]/menu[10]").select()
+    session.findById(
+        r"wnd[1]/usr/tblSAPLCVOBTCTRL_DOKUMENTE/ctxtDRAW-DOKAR[0,0]"
+    ).text = "PIS"
+    session.findById(
+        r"wnd[1]/usr/tblSAPLCVOBTCTRL_DOKUMENTE/ctxtDRAW-DOKNR[1,0]"
+    ).text = pis
+    session.press_enter()
+
+
+# @retry(
+# reraise=True,
+# stop=stop_after_attempt(2),
+# wait=wait_fixed(1),
+# retry=retry_if_not_exception_type(TableConfigurationError),
+# )
 def fill_screen(
     session: GuiSession,
     screen: Screen,
     data: list[dict[str, Any]] | dict[str, Any],
 ):
-    for element in screen.elements:
+    for element_name, element in screen.elements.items():
         # Use only the first row of the data for fields
         current_data = data[0] if isinstance(data, list) else data
         if element.type == ElementType.TABLE:
             current_data = data
-            # TODO: fill table here. We don't need to retry filling table As we are capturing errors while filling table.
-            continue
+            session.fill_table(id=element.id, data=current_data)
+            pis = data[0].get("pis", None)
+            logger.info("Attaching PIS: {}", pis)
+            if pis:
+                attach_pis(
+                    session, data[0]["pis"], screen.elements.get("select all").id
+                )
+                session.dismiss_popups()
         elif element.type == ElementType.SHELL:
             # Set attributes and call internal functions for SHELL type
             if element.call_functions:
@@ -161,7 +232,7 @@ def fill_screen(
                         logger.info(
                             "Calling internal function: {func} of element {name} with params: {params}",
                             func=item.func,
-                            name=element.name,
+                            name=element_name,
                             params=item.params,
                         )
                         getattr(el, item.func)(*item.params)
@@ -169,7 +240,7 @@ def fill_screen(
                         logger.error(
                             "Internal function {func} not found for element {name}",
                             func=item.func,
-                            name=element.name,
+                            name=element_name,
                         )
             if element.set_attributes:
                 for item in element.set_attributes:
@@ -178,7 +249,7 @@ def fill_screen(
                         logger.info(
                             "Setting attributes: {attr} of element {name} with value: {value}",
                             func=item.attribute,
-                            name=element.name,
+                            name=element_name,
                             value=item.value,
                         )
                         setattr(el, item.attribute, item.value)
@@ -186,15 +257,13 @@ def fill_screen(
                         logger.error(
                             "Attribute {attr} not found for element {name}",
                             attr=item.attribute,
-                            name=element.name,
+                            name=element_name,
                         )
-        elif element.type == ElementType.BUTTON:
-            pass
-        else:
+        elif element.type == ElementType.TEXT:
             # must be a text/combobox for now
             logger.info(
                 "Setting element: {name} of type {type} in screen: {screen}",
-                name=element.name,
+                name=element_name,
                 type=element.type.value,
                 screen=screen.name,
             )
@@ -207,9 +276,9 @@ def fill_screen(
                 ):
                     with attempt:
                         try:
-                            if element.name in current_data:
+                            if element_name in current_data:
                                 session.findById(element.id).text = current_data[
-                                    element.name
+                                    element_name
                                 ]
                         except Exception as e:
                             # Press enter before retrying
@@ -224,7 +293,7 @@ def fill_screen(
     if screen.press_enter:
         logger.info("Pressing enter for screen {}", screen.name)
         session.press_enter()
-        session.dismiss_popups_until_none()
+        session.dismiss_popups()
         status_bar = session.get_status_info()
         if status_bar["type"] == "E":
             # Retry filling entire screen
@@ -234,20 +303,39 @@ def fill_screen(
 
 
 def perform_post_actions(session: GuiSession, screen: ScreenOrder):
-    for action in screen.post_actions:
+    if isinstance(screen.post_actions, list):
+        for action in screen.post_actions:
+            logger.info(
+                "Performing post action: {action} in screen {name} at target: {target_id}Description: {description}",
+                action=action.description,
+                name=screen.name,
+                target_id=action.target_id,
+                description=action.description,
+            )
+            if action.type == ActionType.CLICK:
+                session.findById(action.target_id).click()
+            elif action.type == ActionType.ENTER:
+                session.press_enter()
+            elif action.type == ActionType.BACK:
+                session.sendVKey(VKey.F3)
+
+            session.dismiss_popups()
+    else:
         logger.info(
-            "Performing post action: {action} in screen {name} at target: {target_id}Description: {description}",
-            action=action.description,
+            "Performing post action: {action} in screen {name} at target: {target_id}",
+            action=screen.post_actions.description,
             name=screen.name,
-            target_id=action.target_id,
-            description=action.description,
+            target_id=screen.post_actions.target_id,
+            description=screen.post_actions.description,
         )
-        if action.type == ActionType.CLICK:
-            session.findById(action.target_id).click()
-        elif action.type == ActionType.ENTER:
+        if screen.post_actions.type == ActionType.CLICK:
+            session.findById(screen.post_actions.target_id).click()
+        elif screen.post_actions.type == ActionType.ENTER:
             session.press_enter()
-        elif action.type == ActionType.BACK:
+        elif screen.post_actions.type == ActionType.BACK:
             session.sendVKey(VKey.F3)
+
+        session.dismiss_popups()
 
 
 def perform_entry_point_actions(session: GuiSession, screen: Screen):
