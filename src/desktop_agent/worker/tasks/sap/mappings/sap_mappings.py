@@ -5,10 +5,9 @@ from enum import Enum
 class ElementType(str, Enum):
     TEXT = "TEXT"
     BUTTON = "BUTTON"
-    COMBOBOX = "COMBOBOX"
     TABLE = "TABLE"
     CHECKBOX = "CHECKBOX"
-    RADIOBUTTON = "RADFIOBUTTON"
+    RADIOBUTTON = "RADIOBUTTON"
     SHELL = "SHELL"
 
 
@@ -42,7 +41,6 @@ class SetInternalAttribute:
 @dataclass
 class GuiElement:
     id: str
-    name: str
     type: ElementType = ElementType.TEXT
     set_attributes: list[SetInternalAttribute] | None = None
     call_functions: list[CallInternalFunction] | None = None
@@ -51,7 +49,7 @@ class GuiElement:
 @dataclass
 class Screen:
     name: str
-    elements: list[GuiElement]
+    elements: dict[str, GuiElement]
     entry_point: list[Action] | None = (
         None  # Actions to perform to reach this screen. This is like pre_actions
     )
@@ -61,7 +59,7 @@ class Screen:
 @dataclass
 class ScreenOrder:
     name: str
-    post_actions: list[Action] | None = None
+    post_actions: list[Action] | Action | None = None
 
 
 PRESS_HEADER_BUTTON_ACTION = Action(
