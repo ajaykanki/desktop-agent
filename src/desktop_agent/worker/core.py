@@ -4,6 +4,7 @@ import logging
 from desktop_agent.models import JobResult
 from desktop_agent.settings import config
 from procrastinate import App, PsycopgConnector, JobContext
+from pprint import pprint
 
 logging.basicConfig(level=logging.DEBUG if config.is_dev else logging.INFO)
 asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
@@ -16,10 +17,8 @@ app = App(
 
 
 def post_result(result: JobResult):
-    print(
-        "Task executed successfully. This is the after task functio. The result returned by the task is:",
-        result,
-    )
+    print("Post task result function!")
+    pprint(result.model_dump())
 
 
 # Use this decorator to define tasks

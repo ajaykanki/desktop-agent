@@ -94,7 +94,7 @@ VA01_FAST_DATA_ENTRY = Screen(
     ],
     elements={
         "char. display": GuiElement(
-            type=ElementType.COMBOBOX,
+            type=ElementType.TEXT,
             id=r"wnd[0]/usr/tabsTAXI_TABSTRIP_OVERVIEW/tabpT\08/ssubSUBSCREEN_BODY:SAPMV45A:7901/cmbRV45A-MUEBS",
         ),
         "table": GuiElement(
@@ -120,7 +120,7 @@ HEADER_SALES = Screen(
     ],
     elements={
         "doc. currency": GuiElement(
-            type=ElementType.COMBOBOX,
+            type=ElementType.TEXT,
             id=r"wnd[0]/usr/tabsTAXI_TABSTRIP_HEAD/tabpT\01/ssubSUBSCREEN_BODY:SAPMV45A:4301/ctxtVBAK-WAERK",
         )
     },
@@ -137,7 +137,7 @@ HEADER_PARTNERS = Screen(
     ],
     elements={
         "partner function": GuiElement(
-            type=ElementType.COMBOBOX,
+            type=ElementType.TEXT,
             id=r"wnd[0]/usr/tabsTAXI_TABSTRIP_HEAD/tabpT\08/ssubSUBSCREEN_BODY:SAPMV45A:4352/subSUBSCREEN_PARTNER_OVERVIEW:SAPLV09C:1000/tblSAPLV09CGV_TC_PARTNER_OVERVIEW/cmbGVS_TC_DATA-REC-PARVW[0,4]",
         ),
         "partner": GuiElement(
@@ -188,15 +188,15 @@ HEADER_ADD_DATA_A = Screen(
     ],
     elements={
         "channel type": GuiElement(
-            type=ElementType.COMBOBOX,
+            type=ElementType.TEXT,
             id=r"wnd[0]/usr/tabsTAXI_TABSTRIP_HEAD/tabpT\12/ssubSUBSCREEN_BODY:SAPMV45A:4309/ctxtVBAK-ZECOM",
         ),
         "sub channel type": GuiElement(
-            type=ElementType.COMBOBOX,
+            type=ElementType.TEXT,
             id=r"wnd[0]/usr/tabsTAXI_TABSTRIP_HEAD/tabpT\12/ssubSUBSCREEN_BODY:SAPMV45A:4309/ctxtVBAK-ZSCTYP",
         ),
         "order type": GuiElement(
-            type=ElementType.COMBOBOX,
+            type=ElementType.TEXT,
             id=r"wnd[0]/usr/tabsTAXI_TABSTRIP_HEAD/tabpT\12/ssubSUBSCREEN_BODY:SAPMV45A:4309/cmbVBAK-ZORD_TYPE",
         ),
     },
