@@ -1,14 +1,13 @@
 import polars as pl
+import re
 from procrastinate import JobContext
 from sap_gui_engine import SAPGuiEngine, VKey
-from sap_gui_engine.exceptions import TableConfigurationError
 from rpa_toolkit.excel import read_excel
 from typing import Any
 from pathlib import Path
 from tenacity import (
     retry,
     stop_after_attempt,
-    retry_if_not_exception_type,
     wait_fixed,
     Retrying,
     RetryError,
@@ -25,6 +24,36 @@ from .mappings import (
     Action,
     VA01_MAPPINGS,
 )
+
+
+def safe_filename(s: str, max_length: int = 150) -> str:
+    # Replace forbidden characters
+    s = re.sub(r'[<>:"/\\|?*]', "_", s)
+
+    # Replace whitespace/newlines/tabs
+    s = re.sub(r"\s+", "_", s.strip())
+
+    # Remove other problematic characters
+    s = re.sub(r"[',;`~]", "_", s)
+
+    # Remove non-printable/control chars
+    s = "".join(c for c in s if 32 <= ord(c) < 127)
+
+    # Avoid reserved names
+    reserved = {
+        "CON",
+        "PRN",
+        "AUX",
+        "NUL",
+        *(f"COM{i}" for i in range(1, 10)),
+        *(f"LPT{i}" for i in range(1, 10)),
+    }
+    if s.upper().split(".")[0] in reserved:
+        s = f"_{s}"
+
+    # Truncate to max length (keep .png suffix space)
+    s = s[:max_length]
+    return s
 
 
 # For all the tasks going in the same queue, you must use the same lock for all task if you want them to execute sequentially.
@@ -93,15 +122,15 @@ def create_sales_orders(
                 error_message=error_message,
                 e=e,
             )
-            # TODO: Capture screenshot
-            # Capture screenshot of wnd[0] by default, unless the error_message contains "Error while filling table" in that case wnd[1]
-
+            screenshot_path = f"{po_working_path.parent}/screenshot_{so_count}_{line_items[0].get('po number')}_{safe_filename(error_message)}.png"
+            sap.session.take_screenshot(screenshot_path, window=1, format="png")
+            logger.info(f"Screenshot saved to {screenshot_path}")
             error_list.append(
                 {
                     "type": type(e).__name__,
                     "message": error_message,
                     "po number": line_items[0].get("po number", None),
-                    "screenshot_path": "",
+                    "screenshot_path": screenshot_path,
                 }
             )
         finally:
@@ -182,9 +211,17 @@ def va01(
             perform_post_actions(session, screen)
 
     # Save document
-    # Get document number
-    # Return document number
-    return "1234SO"
+    logger.info("Saving Document")
+    session.sendVKey(VKey.CTRL_S)
+    session.dismiss_popups()
+    # Check for GuiModalWindow which is not a popup dialog (F8)
+    error_message = session.check_for_error_dialog()
+    if error_message:
+        raise RuntimeError(error_message)
+
+    doc_number = session.get_document_number()
+    logger.info("Sales Order saved with document number: {}", doc_number)
+    return doc_number
 
 
 def attach_pis(session: GuiSession, pis: str, select_all_id: str):
@@ -276,7 +313,10 @@ def fill_screen(
                 ):
                     with attempt:
                         try:
-                            if element_name in current_data:
+                            if (
+                                element_name in current_data
+                                and current_data[element_name]
+                            ):
                                 session.findById(element.id).text = current_data[
                                     element_name
                                 ]
