@@ -1,6 +1,6 @@
 import uvicorn
 from desktop_agent.api.app import create_app
-from desktop_agent.settings.config import config
+from desktop_agent.settings import config
 
 app = create_app()
 

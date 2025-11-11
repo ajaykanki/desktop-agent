@@ -7,7 +7,7 @@ from scalar_fastapi import get_scalar_api_reference
 from desktop_agent.api.routes import JobRouter
 
 from desktop_agent.logger import logger
-from desktop_agent.settings.config import config
+from desktop_agent.settings import config
 from .utils import get_local_ip
 
 @asynccontextmanager

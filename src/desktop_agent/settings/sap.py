@@ -1,6 +1,6 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
-from desktop_agent.settings import get_env_file, get_keyring_password
 from desktop_agent.logger import logger
+from .constants import get_env_file, get_keyring_password
 
 
 class SAPSettings(BaseSettings):
@@ -13,7 +13,7 @@ class SAPSettings(BaseSettings):
 
     username: str | None = None
     password: str | None = None
-    connection_name: str | None = "SAP 340 Quality"
+    connection_name: str | None = "340 Quality"
     window_title: str | None = "SAP Logon 770"
     executable_path: str | None = (
         r"C:\Program Files (x86)\SAP\FrontEnd\SAPgui\saplogon.exe"

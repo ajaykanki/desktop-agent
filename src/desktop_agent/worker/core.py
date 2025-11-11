@@ -1,37 +1,60 @@
 import asyncio
 import functools
 import logging
-from desktop_agent.settings.config import config
-from desktop_agent.settings.worker import WorkerSettings
-from procrastinate import App, PsycopgConnector
+from desktop_agent.models import JobResult
+from desktop_agent.settings import config
+from procrastinate import App, PsycopgConnector, JobContext
+from pprint import pprint
 
 logging.basicConfig(level=logging.DEBUG if config.is_dev else logging.INFO)
 asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
-workerConfig = WorkerSettings()
 
 app = App(
     connector=PsycopgConnector(conninfo=config.db.url),
-    import_paths=workerConfig.import_paths,
+    import_paths=config.worker.import_paths,
 )
 
 
-def after_task(result):
-    print(
-        "Task executed successfully. This is the after task functio. The result returned by the task is:",
-        result,
-    )
+def post_result(result: JobResult):
+    print("Post task result function!")
+    pprint(result.model_dump())
 
 
 # Use this decorator to define tasks
 def task(original_func=None, **kwargs):
     def wrap(func):
         def new_func(*job_args, **job_kwargs):
+            context: JobContext = job_args[0]
             # Do something before the task is executed
-            result = func(*job_args, **job_kwargs)
-            # Do something after the task is executed
-            after_task(result)
-            return result
+            try:
+                result = func(*job_args, **job_kwargs)
+                job_result = JobResult(
+                    id=context.job.id,
+                    status="succeeded",
+                    task_name=context.job.task_name,
+                    worker_name=context.worker_name,
+                    worker_id=context.job.worker_id,
+                    data=result,
+                )
+                post_result(job_result)
+                return result
+            except Exception as e:
+                # Post error result
+                error_object = {
+                    "type": type(e).__name__,
+                    "message": str(e),
+                }
+                job_result = JobResult(
+                    id=context.job.id,
+                    status="failed",
+                    task_name=context.job.task_name,
+                    worker_name=context.worker_name,
+                    worker_id=context.job.worker_id,
+                    data=error_object,
+                )
+                post_result(job_result)
+                return result
 
         wrapped_func = functools.update_wrapper(new_func, func, updated=())
         return app.task(**kwargs)(wrapped_func)
