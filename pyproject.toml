@@ -9,6 +9,7 @@ dependencies = [
     "fastexcel>=0.16.0",
     "keyring>=25.6.0",
     "loguru>=0.7.3",
+    "o365>=2.1.7",
     "polars>=1.34.0",
     "procrastinate>=3.5.3",
     "psycopg[binary]>=3.2.12",
