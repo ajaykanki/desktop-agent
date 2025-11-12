@@ -265,6 +265,7 @@ source = { editable = "." }
 dependencies = [
     { name = "fastapi", extra = ["standard"] },
     { name = "fastexcel" },
+    { name = "httpx" },
     { name = "keyring" },
     { name = "loguru" },
     { name = "o365" },
@@ -283,6 +284,7 @@ dependencies = [
 requires-dist = [
     { name = "fastapi", extras = ["standard"], specifier = ">=0.120.1" },
     { name = "fastexcel", specifier = ">=0.16.0" },
+    { name = "httpx", specifier = ">=0.28.1" },
     { name = "keyring", specifier = ">=25.6.0" },
     { name = "loguru", specifier = ">=0.7.3" },
     { name = "o365", specifier = ">=2.1.7" },

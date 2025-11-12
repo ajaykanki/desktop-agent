@@ -6,6 +6,7 @@ from .db import DBSettings
 from .sap import SAPSettings
 from .worker import WorkerSettings
 from .o365 import O365Settings
+from .wmill import WmillSettings
 
 
 class GlobalConfig(BaseSettings):
@@ -21,6 +22,7 @@ class GlobalConfig(BaseSettings):
     sap: SAPSettings = SAPSettings()
     worker: WorkerSettings = WorkerSettings()
     o365: O365Settings = O365Settings()
+    wmill: WmillSettings = WmillSettings()
     keyring_service_name: str = KEYRING_SERVICE_NAME
 
     @property

@@ -6,9 +6,10 @@ from desktop_agent.settings import config
 from procrastinate import App, PsycopgConnector, JobContext
 from pprint import pprint
 
-logging.basicConfig(level=logging.DEBUG if config.is_dev else logging.INFO)
-asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+logger = logging.getLogger("procrastinate")
+logger.setLevel(logging.INFO if config.is_dev else logging.WARNING)
 
+asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
 app = App(
     connector=PsycopgConnector(conninfo=config.db.url),
