@@ -11,6 +11,10 @@ def run_worker():
         except Exception:
             logger.warning("Schema already applied or failed to apply schema")
 
+    if not config.worker.validate_config():
+        logger.error("Worker configuration is invalid. Exiting.")
+        exit(1)
+
     if not config.sap.validate_config():
         logger.error("SAP configuration is invalid. Exiting.")
         exit(1)
