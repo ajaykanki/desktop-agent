@@ -2,16 +2,30 @@ from O365 import Account, Message
 from desktop_agent.worker.core import task, app
 from tenacity import retry, stop_after_attempt, wait_fixed
 from desktop_agent.settings import config
+from desktop_agent.services import Windmill
 from desktop_agent.services.o365 import create_o365_account
 from desktop_agent.logger import logger
 import time
 
+wmill = None
+
+
+def get_wmill_client():
+    global wmill
+    if wmill is None:
+        wmill = Windmill(config.wmill.instance_url, config.wmill.super_admin_token)
+
+    return wmill
 
 
 def authorize_user(email: str):
     """Authorizes a user and returns the user token"""
+    client = get_wmill_client()
+    client.user_exists(email).json()
 
-    pass
+    # Get workspaces of the user
+
+
 
 
 @retry(reraise=True, stop=stop_after_attempt(3), wait=wait_fixed(2))
@@ -88,7 +102,7 @@ def monitor_emails():
                 pass
 
             reply = msg.reply()
-            reply.body = f"Hi {msg.sender.name},Your job has been created successfully.<br><br>You can view the job flow at https://something/run/{job_id}"
+            reply.body = f"Hi {msg.sender.name},<br><br>Your job has been created successfully.<br><br>You can view the job flow at https://something/run/{job_id}"
             reply.send()
 
             logger.success("Job createds successfully! Job ID: {}", job_id)
@@ -98,4 +112,5 @@ def monitor_emails():
 
 
 if __name__ == "__main__":
-    authorize_user("ajay_kanki@welspun.com")
+    result = authorize_user("ajay_kanki@wel.com")
+    print(result.json())
