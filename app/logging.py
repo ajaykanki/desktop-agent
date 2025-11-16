@@ -71,10 +71,4 @@ def _setup_logger_handlers(config: LoggerConfig) -> None:
 
 _logger_config = LoggerConfig()
 _setup_logger_handlers(_logger_config)
-
-
-def get_logger():
-    return logger
-
-
-__all__ = ["get_logger"]
+log = logger

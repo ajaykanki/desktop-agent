@@ -1,0 +1,27 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+# Files
+.env
+.env.dev
+.env.staging
+.env.development
+.env.test
+*.log
+*.db
+*.json
+*.txt
+*.pdf
+*.docx
+*.xlsx
+*.xlsb
+*.xlsm
+*.xls
