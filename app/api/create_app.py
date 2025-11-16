@@ -33,6 +33,7 @@ def create_app() -> FastAPI:
         description=config.api.description,
         version=config.api.version,
         lifespan=lifespan,
+        docs_url="/swagger-docs",
     )
 
     # Register routers here
