@@ -3,7 +3,8 @@ from .db import DBSettings
 from .wmill import WmillSettings
 from .worker import WorkerSettings
 from .o365 import O365Settings
-from .utils import KEYRING_SERVICE_NAME, PRODUCTION
+from .sap import SAPSettings
+from .utils import KEYRING_SERVICE_NAME, PRODUCTION, ENV
 from app.logging import log
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -15,9 +16,10 @@ class Config(BaseSettings):
         case_sensitive=False,
         extra="ignore",
     )
-
+    env: str = ENV
     api: APISettings = APISettings()
     db: DBSettings = DBSettings()
+    sap: SAPSettings = SAPSettings()
     worker: WorkerSettings = WorkerSettings()
     o365: O365Settings = O365Settings()
     wmill: WmillSettings = WmillSettings()
