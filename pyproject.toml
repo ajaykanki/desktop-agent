@@ -1,0 +1,18 @@
+[project]
+name = "desktop-agent"
+version = "0.1.0"
+description = "A desktop worker agent to execute tasks that require a GUI"
+readme = "README.md"    
+requires-python = ">=3.13"
+dependencies = [
+    "fastapi[standard]>=0.121.2",
+    "httpx>=0.28.1",
+    "keyring>=25.6.0",
+    "loguru>=0.7.3",
+    "o365>=2.1.7",
+    "procrastinate>=3.5.3",
+    "psycopg[binary]>=3.2.12",
+    "pydantic-settings>=2.12.0",
+    "scalar-fastapi>=1.4.3",
+    "tenacity>=9.1.2",
+]
