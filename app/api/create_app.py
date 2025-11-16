@@ -6,6 +6,7 @@ from fastapi.responses import JSONResponse
 from scalar_fastapi import get_scalar_api_reference
 from app.logging import log
 from app.config import config
+from .router import api_router
 
 
 @asynccontextmanager
@@ -35,6 +36,7 @@ def create_app() -> FastAPI:
     )
 
     # Register routers here
+    app.include_router(api_router)
 
     # Docs
     @app.get("/docs", include_in_schema=False)
