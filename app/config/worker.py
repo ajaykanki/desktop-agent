@@ -38,8 +38,4 @@ class WorkerSettings(BaseSettings):
             )
             self.api_key = get_keyring_password("WORKER_API_KEY")
 
-            if not self.validate_config():
-                log.error("Invalid configuration. Exiting.")
-                exit(1)
-
         return super().model_post_init(context)
