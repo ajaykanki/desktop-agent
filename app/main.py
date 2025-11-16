@@ -1,3 +1,3 @@
-from .config import config
+from app.api.create_app import create_app
 
-print(config.api.host)
+app = create_app()
