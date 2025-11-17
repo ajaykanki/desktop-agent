@@ -37,7 +37,7 @@ def create_app() -> FastAPI:
     )
 
     # Register routers here
-    app.include_router(api_router)
+    app.include_router(api_router, prefix=config.api.prefix)
 
     # Docs
     @app.get("/docs", include_in_schema=False)
