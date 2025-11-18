@@ -31,6 +31,6 @@ class DBSettings(BaseSettings):
             if not self.password:
                 return super().model_post_init(context)
 
-        self.url = f"postgres://{self.user}:{self.password}@{self.host}:{self.port}/{self.name}"
+        self.url = f"postgresql://{self.user}:{self.password}@{self.host}:{self.port}/{self.name}"
 
         return super().model_post_init(context)

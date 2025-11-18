@@ -14,7 +14,7 @@ class WorkerSettings(BaseSettings):
     concurrency: int = 1
     name: str | None = None
     queues: list[str] | None = None
-    import_paths: list[str] = ["tasks"]
+    import_paths: list[str] = ["app.worker.tasks"]
     api_key: str | None = None
     network_drive_letter: str | None = "Z:"  # With colon
 
