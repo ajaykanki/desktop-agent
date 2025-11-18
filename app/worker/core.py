@@ -29,6 +29,7 @@ def task(original_func: Optional[Callable] = None, **kwargs):
     """
     Task middleware to define procrastinate tasks and do something with the result
     """
+
     def wrap(func: Callable) -> Callable:
         @functools.wraps(func)
         def new_func(*job_args, **job_kwargs) -> Any:
