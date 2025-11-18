@@ -79,7 +79,7 @@ class EmailMonitor:
 
         return token, runnables
 
-    def runnable_requires_attachments(self, properties: dict[str, Any]) -> bool:
+    def runnable_requires_b64_attachments(self, properties: dict[str, Any]) -> bool:
         """
         Recursively checks if any property in the schema contains "contentEncoding" and equals "base64".
         """
@@ -91,7 +91,9 @@ class EmailMonitor:
                 return True
 
         for value in properties.values():
-            if isinstance(value, dict) and self.runnable_requires_attachments(value):
+            if isinstance(value, dict) and self.runnable_requires_b64_attachments(
+                value
+            ):
                 return True
 
         return False
@@ -139,30 +141,44 @@ class EmailMonitor:
 
         log.info("Authorized runnable: {}", runnable.get("path"))
 
-        require_attachments = self.runnable_requires_attachments(
-            runnable.get("schema").get("properties")
-        )
+        require_attachments = "input_files" in runnable.get("schema").get("properties")
         log.info("Attachments required: {}", require_attachments)
 
         if require_attachments:
             if not msg.has_attachments:
                 self._raise_trigger_error("no_attachments")
 
-            # Trigger the workflow with attachments
-            log.info("Preparing attachments...")
-            attachments = self.prepare_attachments(msg)
-            resp = self.wmill.post(
-                runnable.get("endpoint_async"),
-                headers={"Authorization": f"Bearer {token}"},
-                json={
-                    "input_files": attachments,
-                    "is_email_triggered": True,
-                    "conversation_id": msg.conversation_id,
-                },
+            # Check if the flow requires base64 attachments or list of file paths
+            input_files_schema = (
+                runnable.get("schema").get("properties").get("input_files")
             )
-            return EmailProcessingResult(job_id=resp.text, runnable=runnable)
+            is_b64 = self.runnable_requires_b64_attachments(input_files_schema)
 
-        # Trigger the workflow without attachments
+            if is_b64:
+                # Trigger the worfkloww directly without saving the attachments to disk
+                log.info("Preparing attachments...")
+                attachments = self.prepare_attachments(msg)
+
+                # Check if the flow requires a single attachment or a list of base64 attachments
+                if input_files_schema.get("type") == "string":
+                    attachments = attachments[0].get("content")
+
+                resp = self.wmill.post(
+                    runnable.get("endpoint_async"),
+                    headers={"Authorization": f"Bearer {token}"},
+                    json={
+                        "input_files": attachments,
+                        "is_email_triggered": True,
+                        "conversation_id": msg.conversation_id,
+                    },
+                )
+                return EmailProcessingResult(job_id=resp.text, runnable=runnable)
+
+            # This means that the flow requires a list of paths.
+            # First save the attachments to temp dir and then trigger the workflow
+            # TODO: Implement this
+
+        # This would mean that the flow does not require input_files as param, so trigger the flow without attachments
         resp = self.wmill.post(
             runnable.get("endpoint_async"),
             headers={"Authorization": f"Bearer {token}"},
