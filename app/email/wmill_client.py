@@ -103,6 +103,22 @@ class Windmill:
         """
         return self.get("/users/all_runnables", token=token).json()
 
+    def run_async(
+        self, url: str, body: dict[str, Any], token: str | None = None
+    ) -> str:
+        """
+        Run a script or a flow by it's async URL.
+
+        Args:
+            url: Async URL of the flow to run
+            body: The arguments to pass to the script or flow
+            token: Optional impersonation token
+
+        Returns:
+            A Job ID of the execution
+        """
+        return self.post(url, json=body, token=token).text
+
     def create_token_impersonate(
         self,
         impersonate_email: str,

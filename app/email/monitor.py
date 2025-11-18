@@ -128,6 +128,11 @@ class EmailMonitor:
         """
         Process an email message to trigger the appropriate workflow.
         """
+        args = {
+            "is_email_triggered": True,
+            "conversation_id": msg.conversation_id,
+        }
+
         subject = msg.subject
         if not subject:
             self._raise_trigger_error("no_subject")
@@ -163,31 +168,25 @@ class EmailMonitor:
                 if input_files_schema.get("type") == "string":
                     attachments = attachments[0].get("content")
 
-                resp = self.wmill.post(
+                args.update({"input_files": attachments})
+                job_id = self.wmill.run_async(
                     runnable.get("endpoint_async"),
-                    headers={"Authorization": f"Bearer {token}"},
-                    json={
-                        "input_files": attachments,
-                        "is_email_triggered": True,
-                        "conversation_id": msg.conversation_id,
-                    },
+                    body=args,
+                    token=token,
                 )
-                return EmailProcessingResult(job_id=resp.text, runnable=runnable)
+                return EmailProcessingResult(job_id=job_id, runnable=runnable)
 
             # This means that the flow requires a list of paths.
             # First save the attachments to temp dir and then trigger the workflow
             # TODO: Implement this
 
         # This would mean that the flow does not require input_files as param, so trigger the flow without attachments
-        resp = self.wmill.post(
+        job_id = self.wmill.run_async(
             runnable.get("endpoint_async"),
-            headers={"Authorization": f"Bearer {token}"},
-            json={
-                "is_email_triggered": True,
-                "conversation_id": msg.conversation_id,
-            },
+            body=args,
+            token=token,
         )
-        return EmailProcessingResult(job_id=resp.text, runnable=runnable)
+        return EmailProcessingResult(job_id=job_id, runnable=runnable)
 
     async def check_new_emails(self) -> None:
         """
