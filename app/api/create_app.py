@@ -1,6 +1,5 @@
 from contextlib import asynccontextmanager
 from datetime import datetime, timezone
-
 from fastapi import FastAPI, Request, HTTPException
 from fastapi.responses import JSONResponse
 from scalar_fastapi import get_scalar_api_reference
@@ -74,7 +73,7 @@ def create_app() -> FastAPI:
 
     @app.exception_handler(Exception)
     async def general_exception_handler(request: Request, exc: Exception):
-        log.error(f"Unhandled Exception: {exc.status_code} - {exc.detail}")
+        log.error(f"Unhandled Exception: {exc}")
         return JSONResponse(
             status_code=500,
             content={

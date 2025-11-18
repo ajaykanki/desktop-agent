@@ -1,8 +1,8 @@
 from fastapi import APIRouter, status, Depends
-from ..auth import verify_api_key
+from app.api.auth import verify_api_key
+from app.api.proc_app import app
 from pydantic import BaseModel
 from typing import Any
-from app.worker.core import app
 
 router = APIRouter()
 
