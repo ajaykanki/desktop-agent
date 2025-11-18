@@ -15,16 +15,22 @@ class DBSettings(BaseSettings):
     user: str = "postgres"
     password: str | None = None
     name: str = "postgres"
+    url: str | None = None
 
     def model_post_init(self, context):
+        # Check if DB_URL was provided in env
+        if self.url:
+            return super().model_post_init(context)
+
+        # Construct DB_URL
         if self.password is None:
             log.warning(
                 "DB_PASSWORD is not set in environment variables. Attempting to retrieve from keyring."
             )
             self.password = get_keyring_password("DB_PASSWORD")
+            if not self.password:
+                return super().model_post_init(context)
+
+        self.url = f"postgres://{self.user}:{self.password}@{self.host}:{self.port}/{self.name}"
 
         return super().model_post_init(context)
-
-    @property
-    def url(self) -> str:
-        return f"postgres://{self.user}:{self.password}@{self.host}:{self.port}/{self.name}"

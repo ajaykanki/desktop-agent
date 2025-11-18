@@ -42,8 +42,14 @@ class Config(BaseSettings):
         """
         errors = []
 
-        if not self.db.password:
-            errors.append("DB_PASSWORD is not set in environment variables or keyring.")
+        if not self.db.url:
+            log.warning(
+                "DB_URL is not set, trying to construct DB_URLfrom other settings."
+            )
+            if not self.db.password:
+                errors.append(
+                    "DB_PASSWORD is not set in environment variables or keyring."
+                )
 
         if errors:
             for err in errors:
