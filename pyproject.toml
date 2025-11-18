@@ -2,7 +2,7 @@
 name = "desktop-agent"
 version = "0.1.0"
 description = "A desktop worker agent to execute tasks that require a GUI"
-readme = "README.md"    
+readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
     "fastapi[standard]>=0.121.2",
@@ -13,6 +13,12 @@ dependencies = [
     "procrastinate>=3.5.3",
     "psycopg[binary]>=3.2.12",
     "pydantic-settings>=2.12.0",
+    "rpatoolkit>=0.1.1a1",
     "scalar-fastapi>=1.4.3",
     "tenacity>=9.1.2",
+]
+
+[project.optional-dependencies]
+worker = [
+    "sap-gui-engine>=0.1.1a9"
 ]
