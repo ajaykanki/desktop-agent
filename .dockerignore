@@ -1,0 +1,70 @@
+# Python
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+.pytest_cache
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.log
+.git
+.mypy_cache
+.pyre
+.pytype
+.ipynb_checkpoints
+
+# Virtual environments
+venv
+env
+ENV
+.venv
+.env
+
+# uv specific
+.uv
+uv.lock
+
+# Files
+.env
+.env.local
+.env.dev
+.env.development
+.env.prod
+.env.production
+.env.staging
+.env.test
+.env.example
+*.log
+*.db
+*.json
+*.txt
+*.pdf
+*.docx
+*.xlsx
+*.xlsb
+*.xlsm
+*.xls
+*.rtf
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Kilocode
+.kilocode
+
+# Files
+
