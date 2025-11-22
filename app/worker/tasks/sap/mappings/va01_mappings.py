@@ -132,7 +132,7 @@ HEADER_PARTNERS = Screen(
         PRESS_HEADER_BUTTON_ACTION,
         Action(
             type=ActionType.CLICK,
-            target_id=r"wnd[0]/usr/tabsTAXI_TABSTRIP_HEAD/tabpT\08",
+            target_id=r"wnd[0]/usr/tabsTAXI_TABSTRIP_HEdjrAD/tabpT\08",
         ),
     ],
     elements={

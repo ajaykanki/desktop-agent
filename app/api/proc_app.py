@@ -19,7 +19,6 @@ app = App(connector=PsycopgConnector(conninfo=config.db.url))
 @app.task(
     name="add",
     queue="sap",
-    lock="sap",
     pass_context=True,
 )
 def add(context: JobContext, a: int, b: int): ...

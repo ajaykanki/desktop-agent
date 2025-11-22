@@ -1,5 +1,5 @@
 version = 1
-revision = 2
+revision = 3
 requires-python = ">=3.13"
 
 [[package]]
@@ -278,7 +278,7 @@ dependencies = [
 
 [package.optional-dependencies]
 worker = [
-    { name = "sap-gui-engine" },
+    { name = "pywinauto" },
 ]
 
 [package.metadata]
@@ -291,8 +291,8 @@ requires-dist = [
     { name = "procrastinate", specifier = ">=3.5.3" },
     { name = "psycopg", extras = ["binary"], specifier = ">=3.2.12" },
     { name = "pydantic-settings", specifier = ">=2.12.0" },
+    { name = "pywinauto", marker = "extra == 'worker'", specifier = ">=0.6.9" },
     { name = "rpatoolkit", specifier = ">=0.1.1a1" },
-    { name = "sap-gui-engine", marker = "extra == 'worker'", specifier = ">=0.1.1a9" },
     { name = "scalar-fastapi", specifier = ">=1.4.3" },
     { name = "tenacity", specifier = ">=9.1.2" },
 ]
@@ -1111,19 +1111,6 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/57/82/70c10cfed87480a4f25d46944793d5fdc6248976468affefebb7c91d3786/rpatoolkit-0.1.1a1.tar.gz", hash = "sha256:65972e19813d9c63d59c0aa3a63d626bb1f43c9a5951cb09ce50b4770e6341f6", size = 9325, upload-time = "2025-11-18T04:39:05.585Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/38/71/cb9a28c257449486bc034414c43f1fee99c6e65e0a7ff58cb7c7a9fa1413/rpatoolkit-0.1.1a1-py3-none-any.whl", hash = "sha256:e15b009a09c55eec41b66fb76256428f12abaa27f8778f025a62a5a601006b4b", size = 12795, upload-time = "2025-11-18T04:39:03.5Z" },
-]
-
-[[package]]
-name = "sap-gui-engine"
-version = "0.1.1a9"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "pywin32" },
-    { name = "pywinauto" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/5f/48/b7fa0b44dd2f75735d3165adcdd00621fbe52a871c7aa7e017b9aa2001d4/sap_gui_engine-0.1.1a9.tar.gz", hash = "sha256:c3c551e6350e974b300df303ed81e05a673958cd6087ab05466a89586b54720f", size = 10300, upload-time = "2025-11-10T12:54:43.938Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/19/f9/6538afd4664e454a326f212faba748071c6a0749f43fdada6282d07f6eda/sap_gui_engine-0.1.1a9-py3-none-any.whl", hash = "sha256:ab171f29b05828d27b0ca6e6efb3b1e6f38cddf7e55697a140e1f9ad1be7cab8", size = 15630, upload-time = "2025-11-10T12:54:42.834Z" },
 ]
 
 [[package]]

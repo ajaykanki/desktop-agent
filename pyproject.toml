@@ -20,5 +20,5 @@ dependencies = [
 
 [project.optional-dependencies]
 worker = [
-    "sap-gui-engine>=0.1.1a9"
+    "pywinauto>=0.6.9",
 ]

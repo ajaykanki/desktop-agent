@@ -13,10 +13,8 @@ from tenacity import (
 from app.logging import log
 from app.worker.core import task
 from app.config import config
-
+from app.sap_gui import SAPGuiEngine, VKey, GuiSession
 from rpatoolkit.df import read_excel
-from sap_gui_engine import SAPGuiEngine, VKey
-from sap_gui_engine.objects.gui_session import GuiSession
 from .mappings import (
     ScreenOrder,
     Screen,
